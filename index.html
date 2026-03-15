@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MatchFlix - Videos Secretos</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .mobile-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #0a0a0f;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            padding-bottom: calc(20px + var(--safe-bottom));
+        }
+        
+        /* Ajuste para Desktop */
+        @media (min-width: 1024px) {
+            body {
+                background: radial-gradient(circle at center, #1a0a0a 0%, #050505 100%);
+            }
+        }
+
+        /* Estilo dos Planos */
+        .plan-card {
+            background: #1c1c1e;
+            border: 2px solid #2c2c2e;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .plan-card.selected {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.05);
+        }
+        .custom-radio {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .plan-card.selected .custom-radio { border-color: #ff0000; }
+        .custom-radio::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff0000;
+            transform: scale(0);
+            transition: transform 0.2s ease;
+        }
+        .plan-card.selected .custom-radio::after { transform: scale(1); }
+
+        /* Animações */
+        .btn-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes scaleUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .scale-up { animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 260px;
+            height: 380px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        .swiper-slide-active { border: 2px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+
+    <script>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src='https://connect.facebook.net/en_US/fbevents.js';s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script');
+    </script>
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "vt0cwadklf");
+    </script>
+</head>
+<body onclick="armBackRedirect()">
+
+<div class="mobile-container">
+    
+    <div class="p-3 bg-red-600 text-center sticky top-0 z-[60] shadow-lg">
+        <p class="text-[12px] sm:text-sm text-white font-black uppercase tracking-widest">
+            ⚠️ OPORTUNIDADE ÚNICA EXPIRA EM: <span id="timer" class="bg-black/20 px-2 py-0.5 rounded">14:59</span>
+        </p>
+    </div>
+
+    <div class="p-4 text-center mt-6">
+        <h1 class="text-2xl font-black uppercase leading-tight mb-1">
+            Acesso <span class="text-red-600">VIP MATCHFLIX</span>
+        </h1>
+        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-4">Mais de <span class="text-white">500 vídeos</span> e conteúdos exclusivos</p>
+        
+        <div class="w-full relative bg-black rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+            <video id="heroVideo" class="w-full aspect-video object-cover" autoplay muted loop playsinline webkit-playsinline controlsList="nodownload">
+                <source src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/download.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <div class="p-4 mt-2" id="plans-section">
+        <h2 class="text-lg font-bold mb-4 uppercase flex items-center gap-2">
+             <i class="fa-solid fa-fire text-red-600"></i> Escolha seu plano
+        </h2>
+        
+        <div class="space-y-3">
+            <label class="block cursor-pointer">
+                <input type="radio" name="plan" value="3dias" class="hidden" onchange="updateSelection(this)">
+                <div class="plan-card p-4 flex items-center justify-between" id="card-3dias">
+                    <div class="flex items-center gap-3">
+                        <div class="custom-radio"></div>
+                        <div>
+                            <h3 class="font-bold text-lg">Teste 3 Dias</h3>
+                            <p class="text-xs text-gray-400 font-medium">Acesso total por 72h</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-xl font-black text-white">R$ 14,90</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="block cursor-pointer relative">
+                <input type="radio" name="plan" value="mensal" class="hidden" checked onchange="updateSelection(this)">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider z-10 shadow-lg border border-white/20">
+                    Recomendado
+                </div>
+                <div class="plan-card selected p-4 flex items-center justify-between" id="card-mensal">
+                    <div class="flex items-center gap-3">
+                        <div class="custom-radio"></div>
+                        <div>
+                            <h3 class="font-bold text-lg">Acesso 30 Dias</h3>
+                            <p class="text-xs text-green-400 font-bold italic">Melhor custo-benefício</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-xl font-black text-white">R$ 19,90</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="block cursor-pointer">
+                <input type="radio" name="plan" value="vitalicio" class="hidden" onchange="updateSelection(this)">
+                <div class="plan-card p-4 flex items-center justify-between" id="card-vitalicio">
+                    <div class="flex items-center gap-3">
+                        <div class="custom-radio"></div>
+                        <div>
+                            <h3 class="font-bold text-lg">Vitalicio + Inc3st0s☠️</h3>
+                            <p class="text-xs text-gray-400 font-medium">+ 250 Videos Vazados Amadores</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-xs text-gray-500 line-through font-bold">R$ 97,00</span>
+                        <span class="block text-xl font-black text-white">R$ 27,90</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <div class="mt-4">
+            <button onclick="processCheckout()" id="main-cta" class="w-full bg-red-600 hover:bg-red-700 text-white font-black text-xl py-5 rounded-xl shadow-[0_10px_30px_rgba(255,0,0,0.4)] flex justify-center items-center transition-all btn-pulse uppercase tracking-wider">
+                <span id="cta-text">Quero ter acesso agora</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="py-10 mt-4 border-t border-gray-800 bg-[#0d0d12]">
+        <div class="px-6 mb-6 text-center">
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Nossas <span class="text-red-600">Modelos</span></h2>
+            <p class="text-xs text-gray-500 mt-1 uppercase font-bold tracking-widest">Arraste para o lado e conheça as Famosas Mais Gostosas do Brasil</p>
+        </div>
+        
+        <div class="swiper modelsSwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/1match.png" class="w-full h-full object-cover"></div>
+                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/2match.png" class="w-full h-full object-cover"></div>
+                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/3match.png" class="w-full h-full object-cover"></div>
+                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/4match.png" class="w-full h-full object-cover"></div>
+                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/5match.png" class="w-full h-full object-cover"></div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <div class="p-4 mt-2">
+        <h2 class="text-xl font-black mb-4 uppercase text-center text-white italic tracking-tighter">Prévia <span class="text-red-600">Sem Censura</span></h2>
+        <div class="w-full bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative">
+            <video id="previewVideo" class="w-full aspect-[4/5] object-cover" autoplay muted loop playsinline webkit-playsinline controlsList="nodownload">
+                <source src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/Design%20sem%20nome%20(4).mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <div class="p-6 mt-6 border-t border-gray-800">
+        <h2 class="text-lg font-black mb-6 uppercase flex items-center gap-2">
+            <i class="fa-solid fa-star text-red-600"></i>
+            Depoimentos de Membros
+        </h2>
+        <div class="space-y-4">
+            <div class="bg-[#1c1c1e] p-5 rounded-2xl border border-[#2c2c2e] shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex text-yellow-500 text-xs gap-1">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="text-[9px] text-gray-500 font-bold uppercase">Há 1 dia</span>
+                </div>
+                <p class="text-sm font-bold text-white mb-2">"O melhor investimento que já fiz"</p>
+                <p class="text-xs text-gray-400 leading-relaxed font-medium">Os vídeos são em alta definição e o grupo no Telegram é atualizado todos os dias. O suporte é excelente.</p>
+                <div class="mt-4 pt-4 border-t border-white/5 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-black italic">RC</div>
+                    <span class="text-[11px] text-gray-400 font-bold">Ricardo C. <span class="text-green-500">✓ Compra Verificada</span></span>
+                </div>
+            </div>
+            <div class="bg-[#1c1c1e] p-5 rounded-2xl border border-[#2c2c2e] shadow-lg opacity-80">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex text-yellow-500 text-xs gap-1">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="text-[9px] text-gray-500 font-bold uppercase">Há 3 dias</span>
+                </div>
+                <p class="text-sm font-bold text-white mb-2">"Acesso instantâneo mesmo"</p>
+                <p class="text-xs text-gray-400 leading-relaxed font-medium">Paguei no Pix e o link já apareceu na tela. O pack de 500 vídeos é absurdo, recomendo o vitalício.</p>
+                <div class="mt-4 pt-4 border-t border-white/5 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-[10px] font-black italic text-gray-500">AM</div>
+                    <span class="text-[11px] text-gray-400 font-bold">André M. <span class="text-green-500">✓ Compra Verificada</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 mt-2 mb-10 border-t border-gray-800 bg-[#0d0d12]/50">
+        <h2 class="text-lg font-black mb-6 uppercase tracking-tighter">Perguntas Frequentes</h2>
+        <div class="space-y-4">
+            <details class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl group overflow-hidden">
+                <summary class="text-sm font-bold p-5 cursor-pointer flex justify-between items-center text-gray-300 group-open:text-red-500 transition-colors">
+                    Como recebo o acesso?
+                    <span class="transition-transform group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                </summary>
+                <div class="px-5 pb-5 text-[13px] text-gray-500 font-medium border-t border-white/5 pt-4 bg-[#1c1c1e]">
+                    Imediatamente após a confirmação do pagamento, você receberá os links de acesso ao <span class="text-blue-400">Telegram VIP</span> e para download dos <span class="text-white">500+ vídeos</span> diretamente no seu e-mail e na tela de confirmação.
+                </div>
+            </details>
+            <details class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl group overflow-hidden">
+                <summary class="text-sm font-bold p-5 cursor-pointer flex justify-between items-center text-gray-300 group-open:text-red-500 transition-colors">
+                    O pagamento é seguro e discreto?
+                    <span class="transition-transform group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                </summary>
+                <div class="px-5 pb-5 text-[13px] text-gray-500 font-medium border-t border-white/5 pt-4 bg-[#1c1c1e]">
+                    Sim. Utilizamos criptografia bancária de ponta a ponta. Na fatura ou comprovante aparecerá apenas um nome genérico de tecnologia, garantindo total discrição.
+                </div>
+            </details>
+            <details class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl group overflow-hidden">
+                <summary class="text-sm font-bold p-5 cursor-pointer flex justify-between items-center text-gray-300 group-open:text-red-500 transition-colors">
+                    Os vídeos são atualizados?
+                    <span class="transition-transform group-open:rotate-180"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                </summary>
+                <div class="px-5 pb-5 text-[13px] text-gray-500 font-medium border-t border-white/5 pt-4 bg-[#1c1c1e]">
+                    Sim! Nosso catálogo já conta com mais de 500 vídeos exclusivos e o grupo no Telegram recebe novas atualizações todas as semanas.
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <footer class="text-center p-8 text-[10px] text-gray-600 border-t border-gray-900 bg-black uppercase tracking-widest font-black">
+        <p>MatchFlix Premium &copy; 2024 - Proibido para menores de 18 anos</p>
+    </footer>
+
+</div>
+
+<div id="pix-modal-overlay" class="fixed inset-0 bg-black/90 z-[100] hidden opacity-0 transition-opacity backdrop-blur-md" onclick="closePixModal()"></div>
+<div id="pix-modal" class="fixed bottom-0 left-0 right-0 mx-auto max-w-[500px] bg-[#0a0a0f] rounded-t-[2.5rem] z-[110] hidden flex-col shadow-2xl border-t border-white/10 overflow-visible pb-[calc(1rem+var(--safe-bottom))]">
+    
+    <div class="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-[#0a0a0f] rounded-t-[2.5rem] sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-6 h-6 bg-red-600/20 rounded-full flex items-center justify-center">
+                <i class="fa-brands fa-pix text-red-500 text-[10px]"></i>
+            </div>
+            <span class="font-black uppercase text-[10px] tracking-widest text-gray-300">Pagamento 100% Seguro</span>
+        </div>
+        <button onclick="closePixModal()" class="w-10 h-10 flex items-center justify-center bg-red-600 rounded-full text-white shadow-lg active:scale-90 transition-transform border-2 border-white/20">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+    
+    <div id="pix-modal-content" class="px-6 py-6 text-center relative text-white">
+        <div class="mb-6">
+            <h3 class="text-xl font-black italic uppercase tracking-tighter mb-1">Assinar VIP MatchFlix</h3>
+            <p class="text-[11px] text-gray-400 font-medium leading-relaxed">
+                Libere agora <span class="text-white font-black uppercase tracking-wider">Mais de 500 Vídeos</span><br>
+                Acesso via <span class="text-blue-400 font-bold uppercase">Telegram</span> e <span class="text-green-400 font-bold uppercase">Download</span>.
+            </p>
+        </div>
+
+        <div class="bg-white p-3 rounded-2xl inline-block mb-6 shadow-xl border-4 border-white/10">
+            <img id="pix-qr-img" src="" alt="QR Code" class="w-32 h-32 mx-auto opacity-90">
+        </div>
+
+        <div class="text-left mb-1 pl-1">
+            <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Código Pix Copia e Cola</label>
+        </div>
+        <div class="bg-black/60 border border-white/10 rounded-2xl flex items-center p-1.5 mb-6">
+            <input type="text" id="pix-code" readonly value="" class="bg-transparent text-[11px] text-gray-400 w-full px-3 outline-none truncate font-mono">
+            <button onclick="copyPixCode()" class="bg-red-600 text-white px-5 py-3 rounded-xl text-xs font-black active:scale-95 transition uppercase tracking-widest shadow-lg">COPIAR</button>
+        </div>
+        
+        <button onclick="checkPaymentManual()" id="btn-already-paid" class="w-full bg-[#1db954] hover:bg-[#1ed760] text-white font-black py-5 rounded-2xl mb-6 transition flex items-center justify-center gap-3 shadow-[0_10px_25px_rgba(29,185,84,0.3)] uppercase tracking-wider text-sm">
+            <i class="fa-solid fa-circle-check text-xl"></i>
+            Já paguei! Liberar meu acesso
+        </button>
+
+        <div class="flex justify-between items-center bg-black/40 p-5 rounded-2xl border border-white/5">
+            <span class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Valor Total:</span>
+            <span id="pix-modal-total" class="text-2xl font-black text-white italic tracking-tighter">R$ 0,00</span>
+        </div>
+        
+        <p class="text-[8px] text-gray-700 mt-5 uppercase font-bold tracking-[0.2em]"><i class="fa-solid fa-lock mr-1"></i> Transação protegida por criptografia bancária</p>
+    </div>
+</div>
+
+<div id="back-redirect-overlay" class="fixed inset-0 bg-black/98 z-[200] hidden opacity-0 transition-opacity backdrop-blur-xl flex items-center justify-center p-6">
+    <div class="bg-[#1c1c1e] border-2 border-red-600 rounded-[2.5rem] p-8 text-center max-w-sm w-full shadow-[0_0_80px_rgba(255,0,0,0.4)] scale-up">
+        <div class="w-20 h-20 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-600/30">
+             <i class="fa-solid fa-hand-stop text-red-600 text-3xl animate-pulse"></i>
+        </div>
+        <h2 class="text-2xl font-black text-white uppercase mb-2 italic tracking-tighter leading-none">ESPERE! NÃO VÁ!</h2>
+        <p class="text-gray-400 text-[12px] mb-6 leading-relaxed font-medium">Você vai mesmo perder os <span class="text-white">500+ Vídeos VIP</span>? Liberamos um <span class="text-red-500 font-black italic">DESCONTO ÚNICO</span> para você entrar agora.</p>
+        
+        <div class="bg-black/60 border-2 border-dashed border-red-600/50 rounded-3xl p-5 mb-6 relative">
+            <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1">Oferta Exclusiva (3 Dias)</p>
+            <div class="flex items-center justify-center gap-3">
+                <p class="text-gray-500 line-through font-bold text-base leading-none">14,90</p>
+                <p class="text-4xl font-black text-green-500 italic tracking-tighter leading-none">R$ 9,90</p>
+            </div>
+        </div>
+
+        <button onclick="applyDiscountAndBuy()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-5 rounded-2xl text-lg uppercase tracking-wider mb-4 btn-pulse shadow-[0_10px_30px_rgba(34,197,94,0.3)]">
+            QUERO O MEU DESCONTO
+        </button>
+        <button onclick="showFreeGroupOffer()" class="text-gray-600 text-[10px] uppercase underline tracking-widest font-black opacity-40">Não, prefiro sair e perder tudo</button>
+    </div>
+</div>
+
+<div id="free-group-overlay" class="fixed inset-0 bg-black/98 z-[300] hidden opacity-0 transition-opacity backdrop-blur-xl flex items-center justify-center p-6">
+    <div class="bg-[#1c1c1e] border border-blue-600/50 rounded-[2.5rem] p-8 text-center max-w-sm w-full shadow-[0_0_50px_rgba(37,99,235,0.15)] scale-up">
+        <div class="w-20 h-20 bg-blue-600/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-600/30">
+             <i class="fa-brands fa-telegram text-blue-500 text-4xl"></i>
+        </div>
+        <h2 class="text-2xl font-black text-white uppercase mb-2 italic tracking-tighter leading-none">ÚLTIMA CHANCE</h2>
+        <p class="text-gray-400 text-[12px] mb-6 leading-relaxed font-medium">Já que você não quer o VIP agora, entre no nosso <span class="text-blue-400 font-black">GRUPO ABERTO</span> e receba algumas prévias gratuitas.</p>
+        
+        <a href="https://t.me/vazadinhoohott" target="_blank" onclick="trackFreeGroup(); closeFreeGroupOffer();" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl text-lg uppercase tracking-wider mb-4 flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(37,99,235,0.3)] transition-all">
+            <i class="fa-brands fa-telegram text-xl"></i> ENTRAR GRÁTIS
+        </a>
+        
+        <button onclick="closeFreeGroupOffer()" class="text-gray-600 text-[10px] uppercase underline tracking-widest font-black opacity-40">Não quero nem de graça</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    // --- NOVAS CONFIGURAÇÕES PUSHINPAY ---
+    const PUSHINPAY_API_URL = 'https://api.pushinpay.com.br/api';
+    const PUSHINPAY_TOKEN = '63836|NFmZ0X7v52HHcUh3YcyeXUotdVQUDixPv7vaVeeI07a31e66';
+    
+    // --- ANTIGAS CONFIGURAÇÕES (MANTIDAS APENAS PARA O TRACK DE CLIQUES SE AINDA FOR USAR A HOTTRACK) ---
+    const API_BASE_URL = 'https://novaapi-one.vercel.app';
+    const HOTTRACK_API_KEY = "a0b2f4ce-2011-4faf-9e77-52e59bbcb02b";
+    const PRESSEL_ID = 200;
+    
+    const PRICES = {
+        '3dias': 14.90,
+        'mensal': 19.90,
+        'vitalicio': 27.90,
+        'discount': 9.90
+    };
+
+    let currentPkg = 'mensal';
+    let pixPollingInterval = null;
+    let currentTransactionId = null;
+    let globalClickId = null;
+    let offerShown = false;
+
+    let utms = {
+        source: '',
+        medium: '',
+        campaign: '',
+        content: '',
+        term: ''
+    };
+
+    function captureUTMs() {
+        const urlParams = new URLSearchParams(window.location.search);
+        utms.source = urlParams.get('utm_source') || '';
+        utms.medium = urlParams.get('utm_medium') || '';
+        utms.campaign = urlParams.get('utm_campaign') || '';
+        utms.content = urlParams.get('utm_content') || '';
+        utms.term = urlParams.get('utm_term') || '';
+        
+        sessionStorage.setItem('matchflix_utms', JSON.stringify(utms));
+    }
+
+    function getStoredUTMs() {
+        const stored = sessionStorage.getItem('matchflix_utms');
+        return stored ? JSON.parse(stored) : utms;
+    }
+
+    function forceAutoplay() {
+        ['heroVideo', 'previewVideo'].forEach(id => {
+            const v = document.getElementById(id);
+            if(v) v.play().catch(() => {});
+        });
+    }
+
+    function initBackRedirect() {
+        for (let i = 0; i < 5; i++) {
+            window.history.pushState({ page: 'retention' }, '', window.location.href);
+        }
+        window.addEventListener('popstate', function(event) {
+            if (!offerShown) showBackRedirect();
+        });
+    }
+
+    function armBackRedirect() {
+        if (!offerShown) {
+            initBackRedirect();
+            document.body.removeAttribute('onclick');
+        }
+    }
+
+    function showBackRedirect() {
+        if (offerShown) return;
+        const overlay = document.getElementById('back-redirect-overlay');
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.replace('opacity-0', 'opacity-100'), 10);
+        offerShown = true;
+    }
+
+    function closeBackRedirect() {
+        const overlay = document.getElementById('back-redirect-overlay');
+        overlay.classList.replace('opacity-100', 'opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+
+    function showFreeGroupOffer() {
+        const backOverlay = document.getElementById('back-redirect-overlay');
+        backOverlay.classList.replace('opacity-100', 'opacity-0');
+        setTimeout(() => backOverlay.classList.add('hidden'), 300);
+
+        const freeOverlay = document.getElementById('free-group-overlay');
+        freeOverlay.classList.remove('hidden');
+        setTimeout(() => freeOverlay.classList.replace('opacity-0', 'opacity-100'), 50);
+    }
+
+    function closeFreeGroupOffer() {
+        const overlay = document.getElementById('free-group-overlay');
+        overlay.classList.replace('opacity-100', 'opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+
+    function trackFreeGroup() {
+        if(typeof fbq === 'function') {
+            fbq('trackCustom', 'AcessoGrupoGratis');
+        }
+    }
+
+    function applyDiscountAndBuy() {
+        closeBackRedirect();
+        currentPkg = 'discount';
+        processCheckout(); 
+    }
+
+    // Função mantida para registro analítico caso você acompanhe os cliques na HotTrack
+    async function registerClickAPI() {
+        try {
+            const currentUTMs = getStoredUTMs();
+            const params = new URLSearchParams(window.location.search);
+            const response = await fetch(`${API_BASE_URL}/api/registerClick`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sellerApiKey: HOTTRACK_API_KEY,
+                    presselId: PRESSEL_ID,
+                    fbclid: params.get("fbclid"),
+                    user_agent: navigator.userAgent,
+                    utm_source: currentUTMs.source,
+                    utm_medium: currentUTMs.medium,
+                    utm_campaign: currentUTMs.campaign,
+                    utm_content: currentUTMs.content,
+                    utm_term: currentUTMs.term
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === "success") globalClickId = data.click_id;
+            }
+        } catch (e) {}
+    }
+
+    function updateSelection(radio) {
+        currentPkg = radio.value;
+        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('card-' + currentPkg).classList.add('selected');
+    }
+
+    // --- NOVA FUNÇÃO GERAR PIX PUSHINPAY ---
+    async function processCheckout() {
+        const btn = document.getElementById('main-cta');
+        const ctaText = document.getElementById('cta-text');
+        const originalHtml = ctaText.innerHTML;
+
+        try {
+            ctaText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> PROCESSANDO...';
+            btn.disabled = true;
+
+            const priceBRL = PRICES[currentPkg];
+            // PushinPay exige valores em centavos
+            const valueCents = Math.round(priceBRL * 100);
+
+            const response = await fetch(`${PUSHINPAY_API_URL}/pix/cashIn`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${PUSHINPAY_TOKEN}` 
+                },
+                body: JSON.stringify({ 
+                    value: valueCents
+                })
+            });
+
+            const data = await response.json();
+
+            // Extrai o Pix Copia e Cola. Pode variar na API entre qr_code ou qr_code_text
+            const pixCode = data.qr_code || data.qr_code_text || data.brcode;
+
+            if (data && pixCode && data.id) {
+                document.getElementById('pix-code').value = pixCode;
+                document.getElementById('pix-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}`;
+                document.getElementById('pix-modal-total').innerText = `R$ ${priceBRL.toFixed(2).replace('.', ',')}`;
+                
+                // Armazenamos o ID fornecido pela PushinPay para consultar depois
+                currentTransactionId = data.id; 
+                
+                openPixModal();
+                startPixPolling();
+            } else {
+                console.error("Erro na resposta da PushinPay:", data);
+                alert("Falha ao gerar a cobrança. Tente novamente.");
+            }
+        } catch (error) {
+            console.error("Erro ao gerar PIX:", error);
+            alert("Erro de conexão com o meio de pagamento.");
+        } finally {
+            ctaText.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    }
+
+    // --- NOVA FUNÇÃO CONSULTA MANUAL PUSHINPAY ---
+    async function checkPaymentManual() {
+        const btn = document.getElementById('btn-already-paid');
+        const originalContent = btn.innerHTML;
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> VERIFICANDO...';
+            if (!currentTransactionId) return;
+            
+            const res = await fetch(`${PUSHINPAY_API_URL}/transactions/${currentTransactionId}`, {
+                method: 'GET',
+                headers: { 
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${PUSHINPAY_TOKEN}` 
+                }
+            });
+            const data = await res.json();
+            
+            // Verifica o status de pagamento aprovado
+            if (data && data.status && data.status.toLowerCase() === 'paid') {
+                clearInterval(pixPollingInterval);
+                showSuccess();
+            } else {
+                btn.innerHTML = 'PAGAMENTO NÃO ENCONTRADO';
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }, 2000);
+            }
+        } catch (e) {
+            btn.innerHTML = 'ERRO DE CONEXÃO';
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 2000);
+        }
+    }
+
+    // --- NOVA FUNÇÃO CONSULTA AUTOMÁTICA PUSHINPAY ---
+    function startPixPolling() {
+        if (pixPollingInterval) clearInterval(pixPollingInterval);
+        pixPollingInterval = setInterval(async () => {
+            if (!currentTransactionId) return;
+            try {
+                const res = await fetch(`${PUSHINPAY_API_URL}/transactions/${currentTransactionId}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${PUSHINPAY_TOKEN}` 
+                    }
+                });
+                const data = await res.json();
+                
+                // Redireciona para o sucesso ao identificar o status "paid"
+                if (data && data.status && data.status.toLowerCase() === 'paid') {
+                    clearInterval(pixPollingInterval);
+                    showSuccess();
+                }
+            } catch (e) {}
+        }, 8000); // Polling a cada 8 segundos
+    }
+
+    function showSuccess() {
+        const targetUrl = "https://t.me/MatchAcessoaovipbot";
+        document.getElementById('pix-modal-content').innerHTML = `
+            <div class="py-10 scale-up text-white">
+                <div class="w-20 h-20 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+                    <i class="fa-solid fa-check text-green-500 text-4xl"></i>
+                </div>
+                <h3 class="text-3xl font-black mb-3 uppercase italic tracking-tighter">ACESSO LIBERADO!</h3>
+                <p class="text-gray-400 mb-8 font-medium italic">Redirecionando para a área exclusiva...</p>
+                <button onclick="window.location.href='${targetUrl}'" class="w-full bg-red-600 text-white py-6 rounded-2xl font-black uppercase shadow-xl tracking-wider text-lg">ACESSAR AGORA</button>
+            </div>
+        `;
+        setTimeout(() => {
+            window.location.href = targetUrl;
+        }, 2000);
+    }
+
+    function openPixModal() {
+        const modal = document.getElementById('pix-modal');
+        const overlay = document.getElementById('pix-modal-overlay');
+        overlay.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.replace('opacity-0', 'opacity-100');
+            modal.classList.add('slide-up');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePixModal() {
+        clearInterval(pixPollingInterval);
+        const modal = document.getElementById('pix-modal');
+        const overlay = document.getElementById('pix-modal-overlay');
+        overlay.classList.replace('opacity-100', 'opacity-0');
+        modal.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            modal.classList.add('hidden');
+            modal.style.transform = '';
+            document.body.style.overflow = '';
+            if (!offerShown) showBackRedirect();
+        }, 300);
+    }
+
+    function copyPixCode() {
+        const input = document.getElementById('pix-code');
+        input.select();
+        document.execCommand('copy');
+        const btn = event.currentTarget;
+        const originalText = btn.innerText;
+        btn.innerText = "COPIADO!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    }
+
+    window.onload = () => {
+        captureUTMs();
+        registerClickAPI();
+        forceAutoplay();
+        new Swiper('.modelsSwiper', {
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            loop: true,
+            coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1.5, slideShadows: true },
+            autoplay: { delay: 2500, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', dynamicBullets: true }
+        });
+        let time = 15 * 60;
+        setInterval(() => {
+            let m = Math.floor(time / 60), s = time % 60;
+            document.getElementById('timer').textContent = `${m}:${s < 10 ? '0'+s : s}`;
+            if(time > 0) time--;
+        }, 1000);
+    };
+</script>
+
+</body>
+</html>
