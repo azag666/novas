@@ -7,7 +7,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -89,17 +88,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .scale-up { animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        .swiper-slide {
-            background-position: center;
-            background-size: cover;
-            width: 260px;
-            height: 380px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid #333;
-        }
-        .swiper-slide-active { border: 2px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
 
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
@@ -206,24 +194,31 @@
         </div>
     </div>
 
+    <!-- NOVOS VÍDEOS DE PRÉVIA -->
     <div class="py-10 mt-4 border-t border-gray-800 bg-[#0d0d12]">
         <div class="px-6 mb-6 text-center">
-            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Nossas <span class="text-red-600">Modelos</span></h2>
-            <p class="text-xs text-gray-500 mt-1 uppercase font-bold tracking-widest">Arraste para o lado e conheça as Famosas Mais Gostosas do Brasil</p>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Mais <span class="text-red-600">Prévias</span></h2>
+            <p class="text-xs text-gray-500 mt-1 uppercase font-bold tracking-widest">Veja um pouco do que te espera no VIP</p>
         </div>
         
-        <div class="swiper modelsSwiper">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/1match.png" class="w-full h-full object-cover"></div>
-                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/2match.png" class="w-full h-full object-cover"></div>
-                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/3match.png" class="w-full h-full object-cover"></div>
-                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/4match.png" class="w-full h-full object-cover"></div>
-                <div class="swiper-slide"><img src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/5match.png" class="w-full h-full object-cover"></div>
+        <div class="px-4 space-y-6">
+            <!-- PRÉVIA 1 -->
+            <div class="w-full bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative">
+                <video class="w-full aspect-[4/5] object-cover" autoplay muted loop playsinline webkit-playsinline controlsList="nodownload">
+                    <source src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/Gravac%CC%A7a%CC%83o%20de%20Tela%202026-03-15%20a%CC%80s%2015.13.00.mp4" type="video/mp4">
+                </video>
             </div>
-            <div class="swiper-pagination"></div>
+            
+            <!-- PRÉVIA 2 -->
+            <div class="w-full bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative">
+                <video class="w-full aspect-[4/5] object-cover" autoplay muted loop playsinline webkit-playsinline controlsList="nodownload">
+                    <source src="https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/matchflix/Gravac%CC%A7a%CC%83o%20de%20Tela%202026-03-15%20a%CC%80s%2014.41.19.mp4" type="video/mp4">
+                </video>
+            </div>
         </div>
     </div>
 
+    <!-- PRÉVIA ORIGINAL MANTIDA -->
     <div class="p-4 mt-2">
         <h2 class="text-xl font-black mb-4 uppercase text-center text-white italic tracking-tighter">Prévia <span class="text-red-600">Sem Censura</span></h2>
         <div class="w-full bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative">
@@ -398,7 +393,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
     // --- NOVAS CONFIGURAÇÕES PUSHINPAY ---
     const PUSHINPAY_API_URL = 'https://api.pushinpay.com.br/api';
@@ -447,9 +441,9 @@
     }
 
     function forceAutoplay() {
-        ['heroVideo', 'previewVideo'].forEach(id => {
-            const v = document.getElementById(id);
-            if(v) v.play().catch(() => {});
+        // Agora tenta iniciar todos os vídeos que encontrar na página
+        document.querySelectorAll('video').forEach(v => {
+            v.play().catch(() => {});
         });
     }
 
@@ -718,16 +712,6 @@
         captureUTMs();
         registerClickAPI();
         forceAutoplay();
-        new Swiper('.modelsSwiper', {
-            effect: 'coverflow',
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: 'auto',
-            loop: true,
-            coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1.5, slideShadows: true },
-            autoplay: { delay: 2500, disableOnInteraction: false },
-            pagination: { el: '.swiper-pagination', dynamicBullets: true }
-        });
         let time = 15 * 60;
         setInterval(() => {
             let m = Math.floor(time / 60), s = time % 60;
